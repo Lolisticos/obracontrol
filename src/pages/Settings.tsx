@@ -1,0 +1,7 @@
+import { Bell, Building2, Palette, Shield, UserRound, Users } from "lucide-react";
+import { PageHeader } from "../components/UI";
+
+export default function Settings(){
+ return <><PageHeader eyebrow="Administración" title="Configuración" description="Gestioná tu perfil, organización y preferencias."/>
+ <div className="settings-layout"><nav>{[[UserRound,"Perfil"],[Building2,"Organización"],[Users,"Miembros"],[Shield,"Roles y permisos"],[Bell,"Notificaciones"],[Palette,"Preferencias"]].map(([Icon,label],i)=><button className={i===0?"active":""} key={label as string}><Icon size={18}/>{label as string}</button>)}</nav><section className="panel settings-form"><h2>Perfil personal</h2><p>Esta información se muestra en tu actividad y asignaciones.</p><div className="avatar-setting"><span>ML</span><button className="btn btn-secondary">Cambiar foto</button></div><form><div className="form-grid"><label>Nombre<input defaultValue="Marina"/></label><label>Apellido<input defaultValue="López"/></label><label>Correo electrónico<input defaultValue="marina@bravaconstrucciones.com.ar"/></label><label>Teléfono<input defaultValue="+54 9 351 555-0198"/></label><label className="full">Rol<select><option>Administradora</option></select></label></div><div className="settings-actions"><button className="btn btn-secondary">Cancelar</button><button className="btn btn-primary">Guardar cambios</button></div></form></section></div></>;
+}

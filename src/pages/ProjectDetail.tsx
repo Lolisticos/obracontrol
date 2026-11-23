@@ -1,0 +1,21 @@
+import { useState } from "react";
+import { ArrowLeft, CalendarDays, ChevronDown, MapPin, MoreHorizontal, UserRound } from "lucide-react";
+import { Link, useParams } from "react-router";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Badge, Progress } from "../components/UI";
+import { money, projects } from "../data/mock";
+
+const tabs = ["Resumen","Presupuesto","Costos","Avances","Materiales","Documentos","Equipo","Historial"];
+export default function ProjectDetail(){
+  const {code}=useParams(); const project=projects.find(p=>p.code===code)??projects[0]; const [tab,setTab]=useState("Resumen");
+  const data=[{n:"Ene",plan:12,real:10},{n:"Feb",plan:24,real:21},{n:"Mar",plan:37,real:32},{n:"Abr",plan:51,real:45},{n:"May",plan:65,real:58},{n:"Jun",plan:76,real:64}];
+  return <>
+    <Link className="back-link" to="/app/obras"><ArrowLeft/> Volver a obras</Link>
+    <header className="project-header"><div className="project-title"><div className="project-avatar">VA</div><div><div><code>{project.code}</code><Badge tone={project.status==="En alerta"?"danger":"success"}>{project.status}</Badge></div><h1>{project.name}</h1><p><MapPin/> {project.location}<span/><UserRound/> {project.manager}<span/><CalendarDays/> 12/02/2026 — 18/12/2026</p></div></div><div><button className="btn btn-secondary"><MoreHorizontal/></button><button className="btn btn-primary">Registrar movimiento <ChevronDown/></button></div></header>
+    <nav className="detail-tabs">{tabs.map(t=><button key={t} className={tab===t?"active":""} onClick={()=>setTab(t)}>{t}</button>)}</nav>
+    {tab==="Resumen"?<div className="detail-content"><section className="metrics-grid detail-metrics"><div className="metric"><span>Presupuesto vigente</span><strong>{money(project.budget,true)}</strong><small>Versión 3 · Aprobada</small></div><div className="metric"><span>Gastos acumulados</span><strong>{money(project.cost,true)}</strong><small>{Math.round(project.cost/project.budget*100)}% del presupuesto</small></div><div className="metric metric-accent"><span>Avance físico</span><strong>{project.progress}%</strong><small>+6% este mes</small></div><div className="metric"><span>Desvío proyectado</span><strong className="success-text">-2,4%</strong><small>Dentro del rango previsto</small></div></section>
+      <section className="dashboard-grid detail-grid"><article className="panel wide"><div className="panel-heading"><div><span>Avance programado vs. ejecutado</span><small>Evolución física mensual</small></div><select><option>Últimos 6 meses</option></select></div><ResponsiveContainer width="100%" height={280}><BarChart data={data}><CartesianGrid stroke="#edf0f2" vertical={false}/><XAxis dataKey="n" axisLine={false} tickLine={false}/><YAxis axisLine={false} tickLine={false}/><Tooltip/><Bar dataKey="plan" fill="#d9e0e6" radius={[4,4,0,0]}/><Bar dataKey="real" fill="#ff7a30" radius={[4,4,0,0]}/></BarChart></ResponsiveContainer></article><article className="panel milestones"><div className="panel-heading"><div><span>Próximos hitos</span><small>Planificación de obra</small></div></div>{[["Finalización estructura","28 NOV","72"],["Inicio mampostería","05 DIC","12"],["Instalación sanitaria","18 DIC","0"]].map(([a,b,c])=><div key={a}><time>{b}</time><span><b>{a}</b><small>Progreso del hito</small></span><strong>{c}%</strong></div>)}</article></section>
+      <section className="panel activity"><div className="panel-heading"><div><span>Actividad reciente</span><small>Últimos movimientos registrados</small></div></div>{[["Se registró un gasto de $ 2.480.000,00","Hormigón elaborado · Corralón del Centro","Hoy, 10:42"],["Nueva medición de avance","Estructura resistente · +4,5%","Ayer, 16:18"],["Documento agregado","Certificado de hormigón H30.pdf","21/11/2026"]].map(([a,b,c])=><div key={a}><i/><span><b>{a}</b><small>{b}</small></span><time>{c}</time></div>)}</section>
+    </div>:<div className="panel tab-placeholder"><h2>{tab} de {project.name}</h2><p>Esta vista comparte los datos y controles del módulo general de {tab.toLowerCase()}, filtrados para esta obra.</p><Link className="btn btn-primary" to={`/app/${tab.toLowerCase()}`}>Abrir módulo</Link></div>}
+  </>;
+}
